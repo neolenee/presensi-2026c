@@ -230,7 +230,7 @@
 
     </main>
 
-    <!-- Modal Kunci Sandi Dosen -->
+    <!-- Modal Kunci Sandi Dosen (PETUNJUK SANDI DISEMBUNYIKAN) -->
     <div id="passwordModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 space-y-4">
             <div class="text-center space-y-2">
@@ -238,7 +238,7 @@
                     <i class="fas fa-lock"></i>
                 </div>
                 <h3 class="font-bold text-slate-800 text-base">Portal Dosen Dikunci</h3>
-                <p class="text-xs text-slate-500">Masukkan kata sandi (Sandi: <strong>admin123</strong>) untuk melanjutkan.</p>
+                <p class="text-xs text-slate-500">Masukkan kata sandi administrator untuk melanjutkan ke menu dosen.</p>
             </div>
             <div>
                 <input type="password" id="lecturerPasswordInput" placeholder="Kata Sandi..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-mono">
@@ -322,7 +322,7 @@
         ];
 
         let attendanceData = {};
-        let activeSession = { meeting: 1, isOpen: false, pin: "1234" }; // Default ke Pertemuan 1
+        let activeSession = { meeting: 1, isOpen: false, pin: "1234" }; 
         let isLecturerUnlocked = false;
 
         window.onload = function() {
@@ -372,7 +372,6 @@
             });
         }
 
-        // PERUBAHAN: Loop sekarang dari Pertemuan 1 sampai 16
         function initAdminMeetingOptions() {
             const select = document.getElementById('adminMeetingSelect');
             select.innerHTML = '';
@@ -420,6 +419,7 @@
 
         function verifyLecturerPassword() {
             const pwd = document.getElementById('lecturerPasswordInput').value;
+            // Pengecekan sandi di balik layar, tidak ada teks di UI yang memberi tahu
             if (pwd === 'admin123') {
                 isLecturerUnlocked = true;
                 closePasswordModal();
@@ -427,7 +427,7 @@
                 switchTab('lecturer');
                 showModal("Sukses", "Akses Portal Dosen/Admin Berhasil Dibuka!", "success");
             } else {
-                showModal("Akses Ditolak", "Kata sandi salah. (Sandi: admin123)", "danger");
+                showModal("Akses Ditolak", "Kata sandi yang dimasukkan salah.", "danger");
             }
         }
 
