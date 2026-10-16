@@ -565,15 +565,15 @@
     document.getElementById('stNoteInput').value = '';
 
     showModal("Presensi Berhasil", `Presensi Pertemuan ${activeSession.meeting} berstatus (${status}) berhasil disimpan!`, "success");
+localStorage.setItem('pti_2026c_attendance', JSON.stringify(attendanceData));
+    onStudentChange();
+
+    // Reset form
+    document.getElementById('stPinInput').value = '';
+    document.getElementById('stNoteInput').value = '';
+
+    showModal("Presensi Berhasil", `Presensi Pertemuan ${activeSession.meeting} berstatus (${status}) berhasil disimpan!`, "success");
 }
-
-            localStorage.setItem('pti_2026c_attendance', JSON.stringify(attendanceData));
-            onStudentChange();
-            document.getElementById('stPinInput').value = '';
-            document.getElementById('stNoteInput').value = '';
-            showModal("Presensi Berhasil", `Presensi Pertemuan ${activeSession.meeting} berstatus (${status}) berhasil disimpan!`, "success");
-        }
-
         function toggleSession() {
             const meeting = parseInt(document.getElementById('adminMeetingSelect').value);
             const pin = document.getElementById('adminPinInput').value.trim() || "1234";
