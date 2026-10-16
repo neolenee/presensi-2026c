@@ -766,21 +766,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 pertemuan: inputPertemuan ? inputPertemuan.value : ''
             };
 
-            fetch(scriptURL, {
-                method: 'POST',
-                body: JSON.stringify(dataPresensi)
-            })
-            .then(response => {
-                tombolAbsen.innerHTML = "Kirim";
-                tombolAbsen.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error!', error.message);
-                tombolAbsen.innerHTML = "Kirim";
-                tombolAbsen.disabled = false;
-            });
-        });
-    }
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzkttgcAlf06I3H-jLQmcSD-vRwVMGcFs_78wZ0maECz1V50mH5Hl8KL0KRxw06JIZ0YQ/exec';
+const formData = new URLSearchParams();
+formData.append('nim', inputMahasiswa ? inputMahasiswa.value : '');
+formData.append('status', inputStatus ? inputStatus.value : '');
+formData.append('pertemuan', inputPertemuan ? inputPertemuan.value : '');
+            
+fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors', // Mencegah blokir CORS dari Google
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData
+})
+.then(() => {
+    tombolAbsen.innerHTML = "Kirim";
+    tombolAbsen.disabled = false;
+    alert("Data berhasil dikirim!");
+})
+.catch(error => {
+    console.error('Error!', error);
+    tombolAbsen.innerHTML = "Kirim";
+    tombolAbsen.disabled = false;
 });
 </script>
 </html>
