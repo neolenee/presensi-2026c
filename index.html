@@ -539,10 +539,13 @@
             showModal("Presensi Berhasil", `Presensi Pertemuan ${activeSession.meeting} berstatus (${status}) berhasil disimpan!`, "success");
         }
 
-            if (!activeSession.isOpen) {
-                showModal("Sesi Ditutup", "Sesi presensi mandiri saat ini sedang ditutup oleh Dosen.", "warning");
-                return;
-            }
+           function prosesAbsen() {
+    if (!activeSession.isOpen) {
+        showModal("Sesi Ditutup", "Sesi presensi mandiri saat ini sedang ditutup oleh Dosen.", "warning");
+        return; // Ini sekarang valid karena ada di dalam function
+    }
+    // ... kode lanjutannya
+}
 
             if (pin !== activeSession.pin) {
                 showModal("PIN Salah", "PIN sesi yang Anda masukkan tidak sesuai.", "danger");
