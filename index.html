@@ -482,6 +482,62 @@
             const pin = document.getElementById('stPinInput').value.trim();
             const status = document.getElementById('stStatusSelect').value;
             const note = document.getElementById('stNoteInput').value.trim();
+            
+            // Validasi Sesi & PIN
+            if (!activeSession.isOpen) {
+                showModal("Sesi Ditutup", "Sesi presensi mandiri saat ini sedang ditutup oleh Dosen.", "warning");
+                return;
+            }
+            if (pin !== activeSession.pin) {
+                showModal("PIN Salah", "PIN sesi yang Anda masukkan tidak sesuai.", "danger");
+                return;
+            }
+
+            // [BAGIAN FETCH KE GOOGLE SHEETS]
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby1-4vf7feI5vzlyvV6T3e6HF-MATIzKTD2iu1azsxC3XfjGyVtQCq3hhzkYFIkX4tv/exec';
+            
+            // Siapkan data yang dikirim ke Google Apps Script
+            const dataPresensi = {
+                nim: nim,
+                status: status,
+                pertemuan: activeSession.meeting,
+                keterangan: note // (Opsional)
+            };
+
+            // Kirim data ke Google Sheets
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataPresensi)
+            })
+            .then(response => {
+                console.log("Sinyal terkirim ke Google Sheets");
+            })
+            .catch(error => {
+                console.error('Error pengiriman ke Sheets:', error.message);
+            });
+            // [AKHIR BAGIAN FETCH]
+
+
+            // [BAGIAN BAWAAN WEB ANDA (Menyimpan ke LocalStorage & Update UI)]
+            if (!attendanceData[nim]) attendanceData[nim] = {};
+            attendanceData[nim][activeSession.meeting] = {
+                status: status,
+                timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                note: note
+            };
+            localStorage.setItem('pti_2026c_attendance', JSON.stringify(attendanceData));
+            onStudentChange();
+            
+            // Reset form
+            document.getElementById('stPinInput').value = '';
+            document.getElementById('stNoteInput').value = '';
+            
+            showModal("Presensi Berhasil", `Presensi Pertemuan ${activeSession.meeting} berstatus (${status}) berhasil disimpan!`, "success");
+        }
 
             if (!activeSession.isOpen) {
                 showModal("Sesi Ditutup", "Sesi presensi mandiri saat ini sedang ditutup oleh Dosen.", "warning");
@@ -677,4 +733,54 @@
         }
     </script>
 </body>
+    <script>
+    // 1. Masukkan URL Web App Google Apps Script Anda di sini:
+    const scriptURL = 'https://script.google.com/macros/s/AKfycby1-4vf7feI5vzlyvV6T3e6HF-MATIzKTD2iu1azsxC3XfjGyVtQCq3hhzkYFIkX4tv/exec';
+    
+    // 2. Ambil referensi ke tombol dan inputan
+    const tombolAbsen = document.getElementById('tombolAbsen');
+    const inputMahasiswa = document.getElementById('pilihanMahasiswa');
+    const inputStatus = document.getElementById('statusKehadiran');
+    const inputPertemuan = document.getElementById('pertemuanKe');
+
+    // 3. Tambahkan aksi ketika tombol diklik
+    tombolAbsen.addEventListener('click', function(e) {
+        e.preventDefault(); // Mencegah halaman me-refresh
+        
+        // Ubah teks tombol jadi loading
+        tombolAbsen.innerHTML = "Mengirim...";
+        tombolAbsen.disabled = true;
+
+        // Siapkan data yang akan dikirim
+        const dataPresensi = {
+            nim: inputMahasiswa.value,
+            status: inputStatus.value,
+            pertemuan: inputPertemuan.value
+        };
+
+        // 4. Proses pengiriman data menggunakan fetch()
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Penting agar tidak kena error CORS di Google Script
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataPresensi)
+        })
+        .then(response => {
+            // Jika berhasil
+            alert('Presensi berhasil dikirim!');
+            // Kembalikan tombol seperti semula
+            tombolAbsen.innerHTML = "Kirim Presensi";
+            tombolAbsen.disabled = false;
+        })
+        .catch(error => {
+            // Jika gagal
+            console.error('Error!', error.message);
+            alert('Gagal mengirim presensi. Coba lagi.');
+            tombolAbsen.innerHTML = "Kirim Presensi";
+            tombolAbsen.disabled = false;
+        });
+    });
+</script>
 </html>
